@@ -1,21 +1,19 @@
 {% set name = "ddtrace" %}
-{% set version = "1.17.3" %}
-
+{% set version = "2.20.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/ddtrace-{{ version }}.tar.gz
-  sha256: f21e8870eef6a7d7d428b54e4dba18b302272d60ce6b49cae02edb71bd1a782f
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/ddtrace-{{ version }}.tar.gz
+  sha256: f185c6dd88cd04884f0ad27b37f14d837274e8fc4dc43407781334d92d41c3bc
 
 build:
-  number: 1
-  skip: true  # [python_impl =='pypy']
   entry_points:
     - ddtrace-run = ddtrace.commands.ddtrace_run:main
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
 
 requirements:
   build:
@@ -24,27 +22,26 @@ requirements:
     - cython <3                              # [build_platform != target_platform]
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
     - cmake
     - ninja
     - make
   host:
-    - cython <3
+    - cython
     - python
     - pip
-    - setuptools_scm[toml] >=4
+    - setuptools-scm >=4
+    - setuptools-rust <2
   run:
     - python
-    - pip
-    - protobuf >=3
-    - attrs >=20
-    - cattrs
-    - six >=1.12.0
-    - ddsketch >=2.0.1
-    - typing_extensions
-    - bytecode
-    - xmltodict >=0.12
-    - envier
+    - bytecode >=0.16.0
+    - envier >=0.5,<1
+    - legacy-cgi >=2.0.0  # [py>=313]
     - opentelemetry-api >=1
+    - protobuf >=3
+    - typing_extensions
+    - xmltodict >=0.12
+    - wrapt >=1
 
 test:
   imports:
@@ -54,15 +51,20 @@ test:
     - pip
   commands:
     - pip check
-
+    - ddtrace-run --help
 
 about:
   home: https://github.com/DataDog/dd-trace-py
   summary: Datadog APM client library
-  license: BSD-3-Clause
-  license_file: LICENSE.BSD3
+  license: 0BSD AND Apache-2.0 AND BSD-3-Clause
+  license_file:
+    - LICENSE
+    - LICENSE.BSD3
+    - LICENSE.Apache
+    - NOTICE
 
 extra:
   recipe-maintainers:
     - aymondebroglie
     - SarvarD
+    - dbast
