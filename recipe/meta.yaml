@@ -8,6 +8,8 @@ package:
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/ddtrace-{{ version }}.tar.gz
   sha256: f185c6dd88cd04884f0ad27b37f14d837274e8fc4dc43407781334d92d41c3bc
+  patches:
+    - 0001-Don-t-require-use-cmake-via-Python-package.patch
 
 build:
   entry_points:

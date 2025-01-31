@@ -1,0 +1,48 @@
+From 23a172000ebf467c81ac6db936a9eddbc3b72595 Mon Sep 17 00:00:00 2001
+From: Daniel Bast <2790401+dbast@users.noreply.github.com>
+Date: Sat, 1 Feb 2025 08:51:14 +0100
+Subject: [PATCH] Don't require/use cmake via Python package
+
+---
+ pyproject.toml | 2 +-
+ setup.py       | 6 ++----
+ 2 files changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/pyproject.toml b/pyproject.toml
+index 03560d1..32c6f03 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -1,5 +1,5 @@
+ [build-system]
+-requires = ["setuptools_scm[toml]>=4", "cython", "cmake>=3.24.2,<3.28; python_version>='3.7'", "setuptools-rust<2"]
++requires = ["setuptools_scm[toml]>=4", "cython", "setuptools-rust<2"]
+ build-backend = "setuptools.build_meta"
+ 
+ [project]
+diff --git a/setup.py b/setup.py
+index dfaa5f6..96c8d74 100644
+--- a/setup.py
++++ b/setup.py
+@@ -8,7 +8,6 @@ import sys
+ import sysconfig
+ import tarfile
+ 
+-import cmake
+ from setuptools_rust import Binding
+ from setuptools_rust import RustExtension
+ 
+@@ -405,9 +404,8 @@ class CMakeBuild(build_ext):
+                     "-DCMAKE_OSX_ARCHITECTURES={}".format(";".join(archs)),
+                 ]
+ 
+-        cmake_command = (
+-            Path(cmake.CMAKE_BIN_DIR) / "cmake"
+-        ).resolve()  # explicitly use the cmake provided by the cmake package
++        cmake_command = Path(shutil.which("cmake")).resolve()
++        print(f"cmake command: {cmake_command}")
+         subprocess.run([cmake_command, *cmake_args], cwd=cmake_build_dir, check=True)
+         subprocess.run([cmake_command, "--build", ".", *build_args], cwd=cmake_build_dir, check=True)
+         subprocess.run([cmake_command, "--install", ".", *install_args], cwd=cmake_build_dir, check=True)
+-- 
+2.48.1
+
