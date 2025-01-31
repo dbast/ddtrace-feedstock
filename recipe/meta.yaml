@@ -31,6 +31,7 @@ requirements:
     - cython
     - python
     - pip
+    - setuptools
     - setuptools-scm >=4
     - setuptools-rust <2
   run:
